@@ -1,5 +1,6 @@
 import os
 import eyed3
+import yaml
 
 # read mp3 files from the audio directory and list them
 def read_mp3_files():
@@ -12,14 +13,19 @@ def read_mp3_files():
 def get_audio_files():
     audio_files = []
     for file in os.listdir('audio'):
-        audio_file = eyed3.load(os.path.join('audio',file))
-        audio_files.append({
-            'title': audio_file.tag.title,
-            'comments': audio_file.tag.comments
-        })
+        if file.endswith('.mp3'):
+            audio_file = eyed3.load(os.path.join('audio',file))
+            comments = ''
+            if audio_file.tag.comments:
+                for comment in audio_file.tag.comments:
+                    comments += comment.text + '\n'
+            audio_files.append({
+                'title': audio_file.tag.title,
+                'comments': comments
+            })
     return audio_files
 
-print(get_audio_files())
+print(yaml.dump(get_audio_files()))
 
 '''
 def read_audio_list_from_files():
